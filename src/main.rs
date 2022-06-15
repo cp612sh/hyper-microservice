@@ -1,6 +1,7 @@
 use futures::{future, Future};
 use hyper::{service::service_fn, Body, Method, Request, Response, Server, StatusCode};
 
+
 const INDEX: &'static str = r#"
  <!doctype html>
  <html>
