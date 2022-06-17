@@ -1,13 +1,10 @@
 use std::{
     fmt,
-    hash::Hasher,
     sync::{Arc, Mutex},
 };
 
 use futures::{future, Future};
-use hyper::{
-    http::response, service::service_fn, Body, Method, Request, Response, Server, StatusCode,
-};
+use hyper::{service::service_fn, Body, Method, Request, Response, Server, StatusCode};
 use slab::Slab;
 
 type UserId = u64;
@@ -62,7 +59,7 @@ fn microservice_handler(
             (&Method::GET, "/") => Response::new(INDEX.into()),
             (method, path) if path.starts_with(USER_PATH) => {
                 let user_id = path
-                    .trim_left_matches(USER_PATH)
+                    .trim_start_matches(USER_PATH)
                     .parse::<UserId>()
                     .ok()
                     .map(|x| x as usize);
@@ -83,7 +80,7 @@ fn microservice_handler(
                     (&Method::PUT, Some(id)) => {
                         if let Some(user) = users.get_mut(id) {
                             *user = UserData;
-                            response_with_code(StatusCode::OK) 
+                            response_with_code(StatusCode::OK)
                         } else {
                             response_with_code(StatusCode::NOT_FOUND)
                         }
