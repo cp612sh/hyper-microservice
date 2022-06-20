@@ -57,6 +57,12 @@ fn microservice_handler(
     let response = {
         match (req.method(), req.uri().path()) {
             (&Method::GET, "/") => Response::new(INDEX.into()),
+
+            (&Method::GET, "/rnd") => {
+                let random_bytes = rand::random::<u8>();
+                Response::new(Body::from(random_bytes.to_string()))
+            }
+
             (method, path) if path.starts_with(USER_PATH) => {
                 let user_id = path
                     .trim_start_matches(USER_PATH)
