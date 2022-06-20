@@ -1,11 +1,11 @@
 use std::{
-    fmt,
+    env, fmt,
     sync::{Arc, Mutex},
 };
 
 use futures::{future, Future};
 use hyper::{service::service_fn, Body, Method, Request, Response, Server, StatusCode};
-use log::{info, trace, debug};
+use log::{debug, info, trace};
 use slab::Slab;
 
 type UserId = u64;
@@ -37,12 +37,16 @@ fn main() {
     info!("Random Microservice - v0.1.0");
 
     trace!("Starting up...");
-    let addr = ([0, 0, 0, 0], 8086).into();
-    
+    // let addr = ([0, 0, 0, 0], 8086).into();
+    let addr = env::var("ADDR")
+        .unwrap_or_else(|_| "0.0.0.0:8086".into())
+        .parse()
+        .expect("Can't parse ADDR");
+
     debug!("Trying to bind server to {}", addr);
     let builder = Server::bind(&addr);
     trace!("Creating service handler");
-    
+
     let user_db = Arc::new(Mutex::new(Slab::new()));
     let server = builder.serve(move || {
         let user_db = user_db.clone();
@@ -51,7 +55,7 @@ fn main() {
 
     info!("Used address {}", addr);
     let server = server.map_err(drop);
-    
+
     debug!("Run!");
     hyper::rt::run(server);
 }
