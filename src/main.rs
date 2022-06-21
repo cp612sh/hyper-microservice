@@ -7,6 +7,7 @@ use futures::{future, Future};
 use hyper::{service::service_fn, Body, Method, Request, Response, Server, StatusCode};
 use log::{debug, info, trace};
 use slab::Slab;
+use dotenv::{dotenv};
 
 type UserId = u64;
 struct UserData;
@@ -33,6 +34,7 @@ impl fmt::Display for UserData {
 }
 
 fn main() {
+    dotenv().ok();
     pretty_env_logger::init();
     info!("Random Microservice - v0.1.0");
 
